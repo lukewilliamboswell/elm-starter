@@ -6,6 +6,7 @@ module Store exposing
 
 import Browser.Navigation as Nav
 
+
 type alias Store =
     { errors : List String
     , navKey : Nav.Key

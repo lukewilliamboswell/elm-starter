@@ -1,1 +1,1 @@
-elm-live.cmd src/App.elm --hot --open --dir=public/ -- --output=public\app.js --debug
+elm-live.cmd src/App.elm --hot --open --dir=public -- --output=public\app.js 
