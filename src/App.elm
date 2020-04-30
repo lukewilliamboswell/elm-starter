@@ -11,6 +11,7 @@ import Pages.ApplicationError
 import Pages.Blank
 import Pages.Home
 import Pages.NotFound
+import Pages.StoryBoard
 import Route exposing (Route)
 import Store exposing (Store)
 import Url exposing (Url)
@@ -37,6 +38,7 @@ type Model
     | NotFound Store
     | ApplicationError Store
     | Home Pages.Home.Model
+    | StoryBoard Pages.StoryBoard.Model
 
 
 init : Json.Decode.Value -> Url -> Nav.Key -> ( Model, Cmd Msg )
@@ -66,6 +68,9 @@ toStore model =
         Home subModel ->
             Pages.Home.toStore subModel
 
+        StoryBoard subModel ->
+            Pages.StoryBoard.toStore subModel
+
 
 toKey : Model -> Nav.Key
 toKey model =
@@ -84,6 +89,10 @@ changeRouteTo maybeRoute model =
             Pages.Home.init (toStore model)
                 |> updateWith Home GotHomeMsg
 
+        Just Route.StoryBoard ->
+            Pages.StoryBoard.init (toStore model)
+                |> updateWith StoryBoard GotStoryBoardMsg
+
 
 updateWith : (subModel -> Model) -> (subMsg -> Msg) -> ( subModel, Cmd subMsg ) -> ( Model, Cmd Msg )
 updateWith toModel toMsg ( subModel, subCmd ) =
@@ -100,13 +109,14 @@ type Msg
     = UserChangedUrl Url
     | UserClickedLink Browser.UrlRequest
     | GotHomeMsg Pages.Home.Msg
+    | GotStoryBoardMsg Pages.StoryBoard.Msg
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case ( msg, model ) of
-        ( UserChangedUrl _, _ ) ->
-            ( model, Cmd.none )
+        ( UserChangedUrl url, _ ) ->
+            changeRouteTo (Route.fromUrl url) model
 
         ( UserClickedLink urlRequest, _ ) ->
             case urlRequest of
@@ -125,6 +135,9 @@ update msg model =
 
         ( GotHomeMsg subMsg, Home subModel ) ->
             updateWith Home GotHomeMsg (Pages.Home.update subMsg subModel)
+
+        ( GotStoryBoardMsg subMsg, StoryBoard subModel ) ->
+            updateWith StoryBoard GotStoryBoardMsg (Pages.StoryBoard.update subMsg subModel)
 
         ( _, _ ) ->
             ( NotFound (toStore model), Cmd.none )
@@ -159,5 +172,10 @@ view model =
             subModel
                 |> Pages.Home.view
                 |> Page.map GotHomeMsg
-                |> Page.view 
-                
+                |> Page.view
+
+        StoryBoard subModel ->
+            subModel
+                |> Pages.StoryBoard.view
+                |> Page.map GotStoryBoardMsg
+                |> Page.view

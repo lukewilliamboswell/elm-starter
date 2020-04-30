@@ -7,6 +7,7 @@ Hoping to add things I like to use regularly so I don't have to go find them in 
 ## Features I want to add
 
 - [x] Include Default Flags
+- [x] Added Modal functionality
 - [ ] Common UI Components / Animations / Assets
 - [ ] Saving App state to Local Storage
 - [ ] Loading and parsing some data from an JSON endpoint

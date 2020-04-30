@@ -7,12 +7,14 @@ import Url.Parser as Parser exposing ((</>), Parser, oneOf, s, string)
 
 type Route
     = Home
+    | StoryBoard
 
 
 parser : Parser (Route -> a) a
 parser =
     oneOf
         [ Parser.map Home Parser.top
+        , Parser.map StoryBoard (s "StoryBoard")
         ]
 
 
@@ -46,4 +48,5 @@ routeToPieces page =
         Home ->
             []
 
-
+        StoryBoard ->
+            [ "StoryBoard" ]

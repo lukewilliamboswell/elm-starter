@@ -6,6 +6,7 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Page exposing (Page)
+import Route
 import Store exposing (Store)
 import UI
 
@@ -25,6 +26,7 @@ init store =
 type Msg
     = UserClickedShowModalBtn
     | UserClickedHideModalBtn
+    | UserClickedNavigateToStoryBoard
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -36,6 +38,9 @@ update msg model =
         ( UserClickedHideModalBtn, _ ) ->
             ( SceneA (toStore model), Cmd.none )
 
+        ( UserClickedNavigateToStoryBoard, _ ) ->
+            ( model, Route.replaceUrl (model |> toStore |> Store.toKey) Route.StoryBoard )
+
 
 
 -- ( _, _ ) ->
@@ -46,9 +51,14 @@ view : Model -> Page Msg
 view model =
     case model of
         SceneA _ ->
-            Page.Default
+            Page.Standard
                 { pageTitle = "Home"
-                , headerView = el [ width fill, Background.color (rgba255 255 0 0 0.5) ] (el [ padding 20, centerX ] (text "Header"))
+                , headerView =
+                    row [ width fill, Background.color (rgba255 255 0 0 0.5) ]
+                        [ UI.buttonView "StoryBoard" UserClickedNavigateToStoryBoard
+                            |> el [ alignLeft, paddingXY 10 0 ]
+                        , el [ padding 20, centerX ] (text "Header")
+                        ]
                 , footerView = el [ width fill, Background.color (rgba255 0 0 255 0.5) ] (el [ padding 20, centerX ] (text "Footer"))
                 , pageContent =
                     column

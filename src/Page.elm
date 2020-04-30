@@ -6,7 +6,7 @@ import UI
 
 
 type Page msg
-    = Default
+    = Standard
         { pageTitle : String
         , headerView : Element msg
         , footerView : Element msg
@@ -24,7 +24,7 @@ type Page msg
 view : Page msg -> Browser.Document msg
 view page =
     case page of
-        Default { pageTitle, headerView, footerView, pageContent } ->
+        Standard { pageTitle, headerView, footerView, pageContent } ->
             { title = pageTitle
             , body =
                 [ layout
@@ -55,8 +55,8 @@ view page =
 map : (msgA -> msgB) -> Page msgA -> Page msgB
 map handler page =
     case page of
-        Default { pageTitle, headerView, footerView, pageContent } ->
-            Default
+        Standard { pageTitle, headerView, footerView, pageContent } ->
+            Standard
                 { pageTitle = pageTitle
                 , headerView = Element.map handler headerView
                 , footerView = Element.map handler footerView
