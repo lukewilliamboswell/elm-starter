@@ -156,9 +156,8 @@ view model =
             Pages.ApplicationError.view
 
         Home subModel ->
-            Page.view
-                { pageTitle = "Home"
-                , headerView = el [ width fill, Background.color (rgba255 255 0 0 0.5) ] (el [ padding 20, centerX ] (text "Header"))
-                , footerView = el [ width fill, Background.color (rgba255 0 0 255 0.5) ] (el [ padding 20, centerX ] (text "Footer"))
-                , pageContent = Element.map GotHomeMsg (Pages.Home.view subModel)
-                }
+            subModel
+                |> Pages.Home.view
+                |> Page.map GotHomeMsg
+                |> Page.view 
+                
