@@ -4,7 +4,10 @@ import Browser
 import Browser.Navigation as Nav
 import Element exposing (..)
 import Element.Background as Background
+import Flags
+import Json.Decode
 import Page
+import Pages.ApplicationError
 import Pages.Blank
 import Pages.Home
 import Pages.NotFound
@@ -13,7 +16,7 @@ import Store exposing (Store)
 import Url exposing (Url)
 
 
-main : Program () Model Msg
+main : Program Json.Decode.Value Model Msg
 main =
     Browser.application
         { init = init
@@ -32,14 +35,20 @@ main =
 type Model
     = Redirect Store
     | NotFound Store
+    | ApplicationError Store
     | Home Pages.Home.Model
 
 
-init : () -> Url -> Nav.Key -> ( Model, Cmd Msg )
-init _ url key =
-    changeRouteTo
-        (Route.fromUrl url)
-        (Redirect (Store.init key))
+init : Json.Decode.Value -> Url -> Nav.Key -> ( Model, Cmd Msg )
+init jsonFlags url key =
+    case jsonFlags |> Json.Decode.decodeValue Flags.decoder of
+        Ok flags ->
+            changeRouteTo
+                (Route.fromUrl url)
+                (Redirect (Store.init key flags))
+
+        Err _ ->
+            ( ApplicationError (Store.init key Flags.empty), Cmd.none )
 
 
 toStore : Model -> Store
@@ -49,6 +58,9 @@ toStore model =
             store
 
         NotFound store ->
+            store
+
+        ApplicationError store ->
             store
 
         Home subModel ->
@@ -139,6 +151,9 @@ view model =
 
         NotFound _ ->
             Pages.NotFound.view
+
+        ApplicationError _ ->
+            Pages.ApplicationError.view
 
         Home subModel ->
             Page.view

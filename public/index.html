@@ -22,7 +22,14 @@
     //     }),
     //     node: document.querySelector("main")
     //   };
-    var app = Elm.App.init({ node: document.querySelector('main') });
+    var app = Elm.App.init({
+      node: document.querySelector('main'),
+      flags: {
+        someString : "Hello World",
+        someInt : 1,
+        someFloat : 0.1
+      }
+    });
     // app.ports.cacheStore.subscribe(function (val) {
     //   if (val === null) {
     //     localStorage.removeItem(storageKey);

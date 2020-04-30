@@ -5,18 +5,21 @@ module Store exposing
     )
 
 import Browser.Navigation as Nav
+import Flags exposing (Flags)
 
 
 type alias Store =
     { errors : List String
     , navKey : Nav.Key
+    , flags : Flags
     }
 
 
-init : Nav.Key -> Store
-init key =
+init : Nav.Key -> Flags -> Store
+init key flags =
     { errors = []
     , navKey = key
+    , flags = flags
     }
 
 

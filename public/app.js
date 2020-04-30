@@ -5204,6 +5204,9 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$application = _Browser_application;
+var $author$project$App$ApplicationError = function (a) {
+	return {$: 'ApplicationError', a: a};
+};
 var $author$project$App$Redirect = function (a) {
 	return {$: 'Redirect', a: a};
 };
@@ -5238,6 +5241,9 @@ var $author$project$App$toStore = function (model) {
 		case 'NotFound':
 			var store = model.a;
 			return store;
+		case 'ApplicationError':
+			var store = model.a;
+			return store;
 		default:
 			var subModel = model.a;
 			return $author$project$Pages$Home$toStore(subModel);
@@ -5269,6 +5275,23 @@ var $author$project$App$changeRouteTo = F2(
 					$author$project$App$toStore(model)));
 		}
 	});
+var $elm$json$Json$Decode$decodeValue = _Json_run;
+var $author$project$Flags$Flags = F3(
+	function (someString, someInt, someFloat) {
+		return {someFloat: someFloat, someInt: someInt, someString: someString};
+	});
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$float = _Json_decodeFloat;
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $elm$json$Json$Decode$map3 = _Json_map3;
+var $elm$json$Json$Decode$string = _Json_decodeString;
+var $author$project$Flags$decoder = A4(
+	$elm$json$Json$Decode$map3,
+	$author$project$Flags$Flags,
+	A2($elm$json$Json$Decode$field, 'someString', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'someInt', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'someFloat', $elm$json$Json$Decode$float));
+var $author$project$Flags$empty = {someFloat: 0.1, someInt: 1, someString: ''};
 var $elm$url$Url$Parser$State = F5(
 	function (visited, unvisited, params, frag, value) {
 		return {frag: frag, params: params, unvisited: unvisited, value: value, visited: visited};
@@ -5997,16 +6020,26 @@ var $author$project$Route$fromUrl = function (url) {
 				path: A2($elm$core$Maybe$withDefault, '', url.fragment)
 			}));
 };
-var $author$project$Store$init = function (key) {
-	return {errors: _List_Nil, navKey: key};
-};
+var $author$project$Store$init = F2(
+	function (key, flags) {
+		return {errors: _List_Nil, flags: flags, navKey: key};
+	});
 var $author$project$App$init = F3(
-	function (_v0, url, key) {
-		return A2(
-			$author$project$App$changeRouteTo,
-			$author$project$Route$fromUrl(url),
-			$author$project$App$Redirect(
-				$author$project$Store$init(key)));
+	function (jsonFlags, url, key) {
+		var _v0 = A2($elm$json$Json$Decode$decodeValue, $author$project$Flags$decoder, jsonFlags);
+		if (_v0.$ === 'Ok') {
+			var flags = _v0.a;
+			return A2(
+				$author$project$App$changeRouteTo,
+				$author$project$Route$fromUrl(url),
+				$author$project$App$Redirect(
+					A2($author$project$Store$init, key, flags)));
+		} else {
+			return _Utils_Tuple2(
+				$author$project$App$ApplicationError(
+					A2($author$project$Store$init, key, $author$project$Flags$empty)),
+				$elm$core$Platform$Cmd$none);
+		}
 	});
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
@@ -6058,6 +6091,7 @@ var $author$project$App$update = F2(
 				}
 		}
 	});
+var $elm$json$Json$Decode$value = _Json_decodeValue;
 var $mdgriffith$elm_ui$Internal$Model$AlignX = function (a) {
 	return {$: 'AlignX', a: a};
 };
@@ -11875,6 +11909,29 @@ var $author$project$Page$view = function (_v0) {
 		title: pageTitle
 	};
 };
+var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
+	return {$: 'AlignY', a: a};
+};
+var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
+var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
+var $author$project$Pages$ApplicationError$view = {
+	body: _List_fromArray(
+		[
+			A2(
+			$mdgriffith$elm_ui$Element$layout,
+			_List_fromArray(
+				[
+					$mdgriffith$elm_ui$Element$width($mdgriffith$elm_ui$Element$fill),
+					$mdgriffith$elm_ui$Element$height($mdgriffith$elm_ui$Element$fill)
+				]),
+			A2(
+				$mdgriffith$elm_ui$Element$el,
+				_List_fromArray(
+					[$mdgriffith$elm_ui$Element$centerX, $mdgriffith$elm_ui$Element$centerY]),
+				$mdgriffith$elm_ui$Element$text('Application Configuration Error; was not able to load applicaiton flags.')))
+		]),
+	title: 'Application Configuration Error'
+};
 var $author$project$Pages$Blank$view = {body: _List_Nil, title: ''};
 var $author$project$Pages$Home$NothingHereYetMsg = {$: 'NothingHereYetMsg'};
 var $mdgriffith$elm_ui$Internal$Model$Button = {$: 'Button'};
@@ -11924,7 +11981,6 @@ var $mdgriffith$elm_ui$Element$Events$onClick = A2($elm$core$Basics$composeL, $m
 var $mdgriffith$elm_ui$Element$Input$enter = 'Enter';
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$fail = _Json_fail;
-var $elm$json$Json$Decode$field = _Json_decodeField;
 var $elm$virtual_dom$VirtualDom$MayPreventDefault = function (a) {
 	return {$: 'MayPreventDefault', a: a};
 };
@@ -11935,7 +11991,6 @@ var $elm$html$Html$Events$preventDefaultOn = F2(
 			event,
 			$elm$virtual_dom$VirtualDom$MayPreventDefault(decoder));
 	});
-var $elm$json$Json$Decode$string = _Json_decodeString;
 var $mdgriffith$elm_ui$Element$Input$onKey = F2(
 	function (desiredCode, msg) {
 		var decode = function (code) {
@@ -12062,11 +12117,6 @@ var $author$project$UI$buttonView = F2(
 				onPress: $elm$core$Maybe$Just(clickHandler)
 			});
 	});
-var $mdgriffith$elm_ui$Internal$Model$AlignY = function (a) {
-	return {$: 'AlignY', a: a};
-};
-var $mdgriffith$elm_ui$Internal$Model$CenterY = {$: 'CenterY'};
-var $mdgriffith$elm_ui$Element$centerY = $mdgriffith$elm_ui$Internal$Model$AlignY($mdgriffith$elm_ui$Internal$Model$CenterY);
 var $author$project$Pages$Home$view = function (model) {
 	return A2(
 		$mdgriffith$elm_ui$Element$column,
@@ -12113,6 +12163,8 @@ var $author$project$App$view = function (model) {
 			return $author$project$Pages$Blank$view;
 		case 'NotFound':
 			return $author$project$Pages$NotFound$view;
+		case 'ApplicationError':
+			return $author$project$Pages$ApplicationError$view;
 		default:
 			var subModel = model.a;
 			return $author$project$Page$view(
@@ -12159,5 +12211,4 @@ var $author$project$App$view = function (model) {
 };
 var $author$project$App$main = $elm$browser$Browser$application(
 	{init: $author$project$App$init, onUrlChange: $author$project$App$UserChangedUrl, onUrlRequest: $author$project$App$UserClickedLink, subscriptions: $author$project$App$subscriptions, update: $author$project$App$update, view: $author$project$App$view});
-_Platform_export({'App':{'init':$author$project$App$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+_Platform_export({'App':{'init':$author$project$App$main($elm$json$Json$Decode$value)(0)}});}(this));
